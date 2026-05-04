@@ -1,11 +1,18 @@
 # dwm_eotf_rs Installer Script
 # This script downloads the latest dwm_eotf_rs.exe, installs it, and sets up a scheduled task to run at login
 
+if (-not ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+
+    Start-Process powershell -Verb RunAs -ArgumentList "-File `"$PSCommandPath`""
+    exit
+}
+
 # Set variables
 $installDir = "$env:ProgramFiles\dwm_eotf_rs"
 $exeName = "dwm_eotf_rs.exe"
 $batName = "run.bat"
-$githubReleaseUrl = "https://api.github.com/repos/SERGEYDJUM/dwm_eotf_rs/releases/latest"
 $downloadUrl = "https://github.com/SERGEYDJUM/dwm_eotf_rs/releases/download/v0.9.3/dwm_eotf_rs.exe"
 
 # Create temporary directory
