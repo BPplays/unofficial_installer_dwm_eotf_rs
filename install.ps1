@@ -6,7 +6,7 @@ if ($args[0] -ne "-test") {
     if (-not ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent() `
     ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        $script = Get-Content -Raw -LiteralPath $PSCommandPath
+        $script = $MyInvocation.MyCommand.Definition
         $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
         $encoded = [Convert]::ToBase64String($bytes)
 
