@@ -221,3 +221,8 @@ finally {
         Remove-Item -Recurse -Force $tempDir
     }
 }
+
+if ($Error.Count -gt 0) {
+    Write-Host "Errors detected. Press any key..."
+    $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+}
