@@ -222,7 +222,4 @@ finally {
 if ($Error.Count -gt 0) {
     Write-Host "Errors detected. Press any key..."
     $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
-} else {
-    Write-Host "Press any key to continue..."
-    $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }
