@@ -24,6 +24,7 @@ if ($args[0] -ne "-test") {
 $installDir = "$env:ProgramFiles\dwm_eotf_rs"
 $targetExeName = "dwm_eotf_rs.exe"
 $batName = "run.bat"
+$batUrl = "https://raw.githubusercontent.com/BPplays/unofficial_installer_dwm_eotf_rs/refs/heads/main/run.bat"
 $apiBaseUrl = "https://api.github.com/repos/SERGEYDJUM/dwm_eotf_rs/releases"
 
 # Create temporary directory
@@ -180,8 +181,8 @@ try {
     Write-Host "Copying $targetExeName to $installDir" -ForegroundColor Green
     Copy-Item -Path $exePath -Destination (Join-Path $installDir $targetExeName) -Force
 
-    Write-Host "Copying run.bat to $installDir" -ForegroundColor Green
-    Copy-Item -Path "$PSScriptRoot\run.bat" -Destination (Join-Path $installDir $batName) -Force
+    Write-Host "Downloading run.bat to $installDir" -ForegroundColor Green
+    Invoke-WebRequest -Uri $batUrl -OutFile (Join-Path $installDir $batName)
 
     Write-Host "Setting up scheduled task to run at login with highest privileges" -ForegroundColor Green
 
