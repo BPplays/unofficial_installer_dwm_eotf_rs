@@ -6,7 +6,7 @@ if ($args[0] -ne "-test") {
     if (-not ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent() `
     ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        $script = $MyInvocation.MyCommand.Definition
+        $script = Get-Content -Raw -LiteralPath $PSCommandPath
         $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
         $encoded = [Convert]::ToBase64String($bytes)
 
@@ -221,5 +221,8 @@ finally {
 
 if ($Error.Count -gt 0) {
     Write-Host "Errors detected. Press any key..."
+    $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+} else {
+    Write-Host "Press any key to continue..."
     $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }
