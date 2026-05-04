@@ -22,34 +22,6 @@ if (!(Test-Path $tempDir)) {
     New-Item -ItemType Directory -Path $tempDir
 }
 
-function Get-LevenshteinDistance {
-    param (
-        [string]$s,
-        [string]$t
-    )
-
-    $n = $s.Length
-    $m = $t.Length
-
-    $d = New-Object 'int[,]' ($n + 1), ($m + 1)
-
-    for ($i = 0; $i -le $n; $i++) { $d[$i,0] = $i }
-    for ($j = 0; $j -le $m; $j++) { $d[0,$j] = $j }
-
-    for ($i = 1; $i -le $n; $i++) {
-        for ($j = 1; $j -le $m; $j++) {
-            $cost = if ($s[$i - 1] -eq $t[$j - 1]) { 0 } else { 1 }
-
-            $d[$i,$j] = [Math]::Min(
-                [Math]::Min($d[$i-1,$j] + 1, $d[$i,$j-1] + 1),
-                $d[$i-1,$j-1] + $cost
-            )
-        }
-    }
-
-    return $d[$n,$m]
-}
-
 function Get-BestExeFromReleases {
     param ([string]$baseUrl)
 
@@ -71,7 +43,6 @@ function Get-BestExeFromReleases {
                     # A simple scoring mechanism: string similarity/length difference
                     # For this use case, we check if it contains the target name or is very similar
                     $score = 0
-                    $score = Get-LevenshteinDistance
                     if ($asset.name -eq $targetExeName) {
                         $score = 100
                     } elseif ($asset.name -like "*$targetExeName*") {
