@@ -39,17 +39,6 @@ function Get-JaroWinklerDistance {
     $max_dist = [Math]::Floor([Math]::Max($len1, $len2) / 2) - 1
     if ($max_dist -lt 0) { $max_dist = 0 }
 
-    $matches1 = New-Object bool[] $len1
-    $matches2 = New-Object bool[] $len2
-    $matches = 0
-
-    for ($i = 0; $i -lt $len1; $temp_i++) {
-        $temp_i = $i
-        $start = [Math]::Max(0, $temp_i - $max_dist)
-        $end = [Math::Min}($temp_i + $max_dist + 1, $len2)
-        # Note: This is a simplified Jaro implementation for PowerShell efficiency
-    }
-    # Re-implementing a robust Jaro-Winkler for PS
     $m = 0
     $t = 0
     $s1_chars = $s1.ToCharArray()
@@ -96,6 +85,7 @@ function Test-JaroWinkler {
     Write-Host "Running Jaro-Winkler Distance Tests..." -ForegroundColor Cyan
     $tests = @(
         @{ s1 = "dwm_eotf_rs.exe"; s2 = "dwm_eotf_rs.exe"; expected = 1.0 }
+        @{ s1 = "dwm_eotf_rs-neo.exe"; s2 = "dwm_eotf_rs.exe"; expected = 0.9 }
         @{ s1 = "apple"; s2 = "apply"; expected = 0.9 } # Approximate
         @{ s1 = "abc"; s2 = "def"; expected = 0.0 }
         @{ s1 = "test"; s2 = ""; expected = 0.0 }
@@ -108,7 +98,7 @@ function Test-JaroWinkler {
             Write-Host "PASS: '$($test.s1)' vs '$($test.s2)' -> Result: $result" -ForegroundColor Green
             $passed++
         } else {
-            Write-Host "FAIL: '$($test.Pass)' vs '$($test.s2)' -> Result: $result (Expected approx $($test.expected))" -ForegroundColor Red
+            Write-Host "FAIL: '$($test.s1)' vs '$($test.s2)' -> Result: $result (Expected approx $($test.expected))" -ForegroundColor Red
         }
     }
     Write-Host "`nTests Passed: $passed / $($tests.Count)" -ForegroundColor Cyan
@@ -162,7 +152,7 @@ if ($args[0] -eq "-test") {
 
 try {
     # Find the best executable URL
-    $downloadUrl = Get-BestExeFromReleases -baseUrl $apiBase $apiBaseUrl
+    $downloadUrl = Get-BestExeFromReleases -baseUrl $apiBaseUrl
 
     if (-not $downloadUrl) {
         throw "Could not find a suitable .exe in any available releases."
@@ -188,13 +178,14 @@ try {
     Write-Host "Setting up scheduled task to run at login with highest privileges" -ForegroundColor Green
 
     $taskName = "dwm_eotf_rs"
+    $taskPath = "\Users\$env:USERNAME\"
     $action = New-ScheduledTaskAction -Execute (Join-Path $installDir $batName) -WorkingDirectory $installDir
-    $trigger = New-ScheduledTaskTrigger -AtLogOn
+    $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1)
     $settings.ExecutionTimeLimit = 'PT0S'
     $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Highest
 
-    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description "Runs dwm_eotf_rs at user login"
+    Register-ScheduledTask -TaskName $taskName -TaskPath $taskPath -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description "Runs dwm_eotf_rs at user login"
 
     Write-Host "Installation completed successfully!" -ForegroundColor Green
 }

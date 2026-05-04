@@ -12,11 +12,12 @@ if (-not ([Security.Principal.WindowsPrincipal] `
 # Set variables
 $installDir = "$env:ProgramFiles\dwm_eotf_rs"
 $taskName = "dwm_eotf_rs"
+$taskPath = "\Users\$env:USERNAME\"
 
 try {
     # Remove the scheduled task
     Write-Host "Removing scheduled task: $taskName" -ForegroundColor Yellow
-    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+    Unregister-ScheduledTask -TaskName $taskName -TaskPath $taskPath -Confirm:$false
 
     # Remove the installation directory
     Write-Host "Removing installation directory: $installDir" -ForegroundColor Yellow
