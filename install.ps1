@@ -188,6 +188,21 @@ try {
     Register-ScheduledTask -TaskName $taskName -TaskPath $taskPath -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description "Runs dwm_eotf_rs at user login"
 
     Write-Host "Installation completed successfully!" -ForegroundColor Green
+    # Ask user
+    $response = Read-Host "Run the task now? (Y/n)"
+
+    if (-not ($response -match '^(n|no)$')) {
+        try {
+            Start-ScheduledTask -TaskName $taskName -TaskPath $taskPath
+            Write-Host "Task started." -ForegroundColor Green
+        }
+        catch {
+            Write-Error "Failed to start task: $($_.Exception.Message)"
+        }
+    }
+    else {
+        Write-Host "Task will run at next logon." -ForegroundColor Yellow
+    }
 }
 catch {
     Write-Error "An error occurred during installation: $($_.Exception.Message)"
