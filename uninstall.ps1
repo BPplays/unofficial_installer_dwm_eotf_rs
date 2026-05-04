@@ -4,11 +4,18 @@
 if (-not ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
-    $encoded = [Convert]::ToBase64String($bytes)
 
-    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded"
-    exit
+    try {
+        $script = $MyInvocation.MyCommand.Definition
+        $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
+        $encoded = [Convert]::ToBase64String($bytes)
+
+        Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded"
+        exit
+    }
+    catch {
+        Write-Error "failed"
+    }
 }
 
 # Set variables
