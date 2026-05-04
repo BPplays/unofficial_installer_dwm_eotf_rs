@@ -4,18 +4,14 @@
 if (-not ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    $script = $MyInvocation.MyCommand.Definition
+    $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
+    $encoded = [Convert]::ToBase64String($bytes)
 
-    try {
-        $script = $MyInvocation.MyCommand.Definition
-        $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
-        $encoded = [Convert]::ToBase64String($bytes)
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded"
 
-        Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded"
-        exit
-    }
-    catch {
-        Write-Error "failed"
-    }
+    return
+
 }
 
 # Set variables
@@ -40,4 +36,10 @@ try {
 catch {
     Write-Error "An error occurred during uninstallation: $($_.Exception.Message)"
     Write-Host "Uninstallation may not have completed properly." -ForegroundColor Red
+}
+
+
+if ($Error.Count -gt 0) {
+    Write-Host "Errors detected. Press any key..."
+    $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }

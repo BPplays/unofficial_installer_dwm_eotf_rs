@@ -6,18 +6,13 @@ if ($args[0] -ne "-test") {
     if (-not ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent() `
     ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        try {
-            $script = $MyInvocation.MyCommand.Definition
-            $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
-            $encoded = [Convert]::ToBase64String($bytes)
+    $script = $MyInvocation.MyCommand.Definition
+    $bytes  = [System.Text.Encoding]::Unicode.GetBytes($script)
+    $encoded = [Convert]::ToBase64String($bytes)
 
-            Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded"
-            exit
-        }
-        catch {
-            Write-Error "failed"
-        }
-    }
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded"
+
+    return
 }
 
 # Set variables
