@@ -38,9 +38,9 @@ try {
     Write-Host "Setting up scheduled task to run at login with highest privileges" -ForegroundColor Green
 
     $taskName = "dwm_eotf_rs"
-    $action = New-ScheduledTaskAction -Execute "$installDir\$batName"
+    $action = New-ScheduledTaskAction -Execute "$installDir\$batName" -WorkingDirectory "$installDir"
     $trigger = New-ScheduledTaskTrigger -AtLogOn
-    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -RestartCount 0
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1)
     $settings.ExecutionTimeLimit = 'PT0S'
     $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Highest
 
