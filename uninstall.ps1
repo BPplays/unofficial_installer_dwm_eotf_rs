@@ -6,7 +6,6 @@ if (-not ([Security.Principal.WindowsPrincipal] `
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
 
     Start-Process powershell -Verb RunAs -ArgumentList "-File `"$PSCommandPath`""
-    exit
 }
 
 # Set variables
